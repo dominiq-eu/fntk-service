@@ -9,19 +9,23 @@ import Response from './data/response'
 import HTTPGateway from './gateways/http'
 import NLPMiddleware from './middleware/nlp'
 
-// const path = `${__dirname}/../modules/functions`
-const path = `${__dirname}/functions`
+import Path from 'path'
+
+const path = Path.resolve(process.cwd()) + '/functions'
 const port = 3000
 
-const loadFunction = (req, fnpath) => {
-    const fn = path => require(`${fnpath}${path}`)
+const loadFunction = (req, basePath) => {
+    const fn = path => require(`${basePath}${path}`)
     return fn(req.path)(req.payload)
 }
 
-const Router = request => {
+const Router = ({ path }) => request => {
     try {
-        return loadFunction(request, FunctionsPath)
+        console.log('Load Function: Path: ', path)
+        console.log('Load Function: Request: ', request)
+        return loadFunction(request, path)
     } catch (e) {
+        console.log('Load Function: Error: ', e)
         return Response.Error(e)
     }
 }
@@ -32,9 +36,7 @@ const Service = App()
     // Add data manipulation pipeline steps
     .add(NLPMiddleware({ path }))
     // Add data processing
-    .do(Router)
-
-console.log('Service:', Service)
+    .do(Router({ path }))
 
 export default {
     Service,

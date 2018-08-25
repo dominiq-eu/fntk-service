@@ -144,7 +144,7 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                     // Here we add a layer to manipulate the data on his way trough the
                     // system and before it reaches it's final processing.
                     // add: l => App(x => l(f(x))),
-                    add: l => App(fn, sources, layer.concat(l)),
+                    add: l => App(fn, sources, layer.concat([l])),
 
                     // Add the data processing
                     do: f => App(f, sources, layer),
@@ -154,11 +154,11 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                         // Build the data processing pipeline using composition.
                         const dataPipeline = layer
                             .concat(fn)
-                            .reduce((f, g) => v => f(g(v)), x => x)
+                            .reduce((f, g) => x => g(f(x)), x => x)
 
                         // Hand the data processing pipeline to the data sources,
                         // so that every source can pass new data to the app.
-                        sources.forEach(dataPipeline)
+                        sources.forEach(s => s(dataPipeline))
                     }
                 })
 
@@ -716,29 +716,36 @@ parcelRequire = (function(modules, cache, entry, globalName) {
 
                 var _nlp2 = _interopRequireDefault(_nlp)
 
+                var _path = require('path')
+
+                var _path2 = _interopRequireDefault(_path)
+
                 function _interopRequireDefault(obj) {
                     return obj && obj.__esModule ? obj : { default: obj }
                 }
 
-                // const path = `${__dirname}/../modules/functions`
-                // TODO: Modify node search path for modules
+                const path =
+                    _path2.default.resolve(process.cwd()) + '/functions' // TODO: Modify node search path for modules
                 // See:
                 // https://gist.github.com/branneman/8048520
                 // global.include = path => require(`${__dirname}/${path}`)
 
                 // Import the app structure
-                const path = `${__dirname}/functions`
+
                 const port = 3000
 
-                const loadFunction = (req, fnpath) => {
-                    const fn = path => require(`${fnpath}${path}`)
+                const loadFunction = (req, basePath) => {
+                    const fn = path => require(`${basePath}${path}`)
                     return fn(req.path)(req.payload)
                 }
 
-                const Router = request => {
+                const Router = ({ path }) => request => {
                     try {
-                        return loadFunction(request, FunctionsPath)
+                        console.log('Load Function: Path: ', path)
+                        console.log('Load Function: Request: ', request)
+                        return loadFunction(request, path)
                     } catch (e) {
+                        console.log('Load Function: Error: ', e)
                         return _response2.default.Error(e)
                     }
                 }
@@ -749,9 +756,7 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                     // Add data manipulation pipeline steps
                     .add((0, _nlp2.default)({ path }))
                     // Add data processing
-                    .do(Router)
-
-                console.log('Service:', Service)
+                    .do(Router({ path }))
 
                 exports.default = {
                     Service,

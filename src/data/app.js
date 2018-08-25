@@ -20,7 +20,7 @@ const App = (fn = x => x, sources = [], layer = []) => ({
     // Here we add a layer to manipulate the data on his way trough the
     // system and before it reaches it's final processing.
     // add: l => App(x => l(f(x))),
-    add: l => App(fn, sources, layer.concat(l)),
+    add: l => App(fn, sources, layer.concat([l])),
 
     // Add the data processing
     do: f => App(f, sources, layer),
@@ -30,11 +30,11 @@ const App = (fn = x => x, sources = [], layer = []) => ({
         // Build the data processing pipeline using composition.
         const dataPipeline = layer
             .concat(fn)
-            .reduce((f, g) => v => f(g(v)), x => x)
+            .reduce((f, g) => x => g(f(x)), x => x)
 
         // Hand the data processing pipeline to the data sources,
         // so that every source can pass new data to the app.
-        sources.forEach(dataPipeline)
+        sources.forEach(s => s(dataPipeline))
     }
 })
 
