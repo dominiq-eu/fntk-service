@@ -1,44 +1,45 @@
 // TODO: Modify node search path for modules
 // See:
 // https://gist.github.com/branneman/8048520
-global.include = path => require(`${__dirname}/${path}`);
+// global.include = path => require(`${__dirname}/${path}`)
 
 // Import the app structure
-import Middleware from "./middleware";
-import HttpGateway from "./gateways/http";
-import Router from "./router";
-import NlpLayer from "./middleware/nlp";
+import App from './data/app'
+import Response from './data/response'
+import HTTPGateway from './gateways/http'
+import NLPMiddleware from './middleware/nlp'
 
-// import Request from './data/request'
+// const path = `${__dirname}/../modules/functions`
+const path = `${__dirname}/functions`
+const port = 3000
 
-const path = `${__dirname}/../modules/functions`;
-// const nlpRouter = NlpRouter(path)
+const loadFunction = (req, fnpath) => {
+    const fn = path => require(`${fnpath}${path}`)
+    return fn(req.path)(req.payload)
+}
 
-const App = Middleware();
-App
-  // Define how we receive and send data
-  .add(HttpGateway())
-  // .add(NatsGateway())
-  // .add(TelegramGateway())
-
-  // Define how we process the incoming data
-  .use(NlpLayer(path))
-  // .use(BeuthAuthentication)
-
-  // Decide to which function we want to route the request to
-  .run(request => {
-    // Get path for nlp Requests.
-    console.log("[Gateway] Request: ", request);
+const Router = request => {
     try {
-      return Router(path, request);
+        return loadFunction(request, FunctionsPath)
     } catch (e) {
-      return {
-        ok: false,
-        payload: e
-      };
+        return Response.Error(e)
     }
-    // return request.case({
-    //     Path: () => Router(path, request),
-    //     NLP: () => nlpRouter(request)
-    // })
-  });
+}
+
+const Service = App()
+    // Add data sources
+    .source(HTTPGateway({ port }))
+    // Add data manipulation pipeline steps
+    .add(NLPMiddleware({ path }))
+    // Add data processing
+    .do(Router)
+
+console.log('Service:', Service)
+
+export default {
+    Service,
+    App,
+    Router,
+    HTTPGateway,
+    NLPMiddleware
+}
