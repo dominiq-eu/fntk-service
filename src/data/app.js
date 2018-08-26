@@ -38,4 +38,4 @@ const App = (fn = x => x, sources = [], layer = []) => ({
     }
 })
 
-export default App
+module.exports = App

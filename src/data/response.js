@@ -4,8 +4,8 @@
     Provides a data structure that represents an incoming request.
 */
 
-import { Union, Result } from '@fntk/types'
-import { random } from '../utils'
+const { Union, Result } = require('@fntk/types')
+const { random } = require('../utils')
 
 const Response = Union('Response', {
     Success: Result.Ok,
@@ -13,4 +13,4 @@ const Response = Union('Response', {
     Random: data_list => Result.Ok(random(data_list))
 })
 
-export default Response
+module.exports = Response

@@ -27,7 +27,8 @@
         "natural": "^0.6.1",
         "nlp-toolkit": "^0.2.6",
         "snowball": "^0.3.1",
-        "stopwords-iso": "^0.4.0"
+        "stopwords-iso": "^0.4.0",
+        "telebot": "^1.2.6"
     },
     "devDependencies": {
         "husky": "^0.14.3",

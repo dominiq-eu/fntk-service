@@ -4,20 +4,26 @@
     Provides a data structure that represents an incoming request.
 */
 
-import { Data, Union } from '@fntk/types'
+const { Type, Data, Union, String, Object } = require('@fntk/types')
 
 const RequestType = Data('Request', {
     path: String,
     payload: Object
 })
 
-const NLPRequestType = Data('NLP', {
-    sentence: String
-})
+const NLPRequestType = Type(
+    'NLP',
+    v => Object.is(v) && v.sentence && String.is(v.sentence),
+    v => ({ sentence: String(v) })
+)
+
+// const NLPRequestType = Data('NLP', {
+//     sentence: String
+// })
 
 const Request = Union('Request', {
     Request: RequestType,
     NLP: NLPRequestType
 })
 
-export default Request
+module.exports = Request

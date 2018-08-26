@@ -117,11 +117,6 @@ parcelRequire = (function(modules, cache, entry, globalName) {
     {
         '2SjF': [
             function(require, module, exports) {
-                'use strict'
-
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
                 /*
     App.js
 
@@ -162,7 +157,7 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                     }
                 })
 
-                exports.default = App
+                module.exports = App
             },
             {}
         ],
@@ -189,82 +184,50 @@ parcelRequire = (function(modules, cache, entry, globalName) {
         ],
         csfc: [
             function(require, module, exports) {
-                'use strict'
-
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
-
-                var _types = require('@fntk/types')
-
-                var _utils = require('../utils')
-
                 /*
     Request
 
     Provides a data structure that represents an incoming request.
 */
 
-                const Response = (0, _types.Union)('Response', {
-                    Success: _types.Result.Ok,
-                    Error: _types.Result.Err,
-                    Random: data_list =>
-                        _types.Result.Ok((0, _utils.random)(data_list))
+                const { Union, Result } = require('@fntk/types')
+                const { random } = require('../utils')
+
+                const Response = Union('Response', {
+                    Success: Result.Ok,
+                    Error: Result.Err,
+                    Random: data_list => Result.Ok(random(data_list))
                 })
 
-                exports.default = Response
+                module.exports = Response
             },
             { '../utils': 'jWsf' }
         ],
         shZs: [
             function(require, module, exports) {
-                'use strict'
+                // Express
+                const Express = require('express')
+                const Compression = require('compression')
+                const BodyParser = require('body-parser')
 
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
+                // Node
+                const Url = require('url')
+                const Http = require('http')
 
-                var _express = require('express')
-
-                var _express2 = _interopRequireDefault(_express)
-
-                var _compression = require('compression')
-
-                var _compression2 = _interopRequireDefault(_compression)
-
-                var _bodyParser = require('body-parser')
-
-                var _bodyParser2 = _interopRequireDefault(_bodyParser)
-
-                var _url = require('url')
-
-                var _url2 = _interopRequireDefault(_url)
-
-                var _http = require('http')
-
-                var _http2 = _interopRequireDefault(_http)
-
-                var _types = require('@fntk/types')
-
-                function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : { default: obj }
-                }
+                const { Data } = require('@fntk/types')
 
                 //
                 // -- Types
                 //
 
-                // Express
-                const HttpHeader = (0, _types.Data)('HTTPHeader', {
+                const HttpHeader = Data('HTTPHeader', {
                     method: String,
                     url: String,
                     path: String,
                     headers: Object
                 })
 
-                // Node
-
-                const HttpRequest = (0, _types.Data)('HTTPRequest', {
+                const HttpRequest = Data('HTTPRequest', {
                     http: HttpHeader,
                     data: Object
                 })
@@ -282,15 +245,13 @@ parcelRequire = (function(modules, cache, entry, globalName) {
 
                 // app :: ()
                 const app = fn =>
-                    (0, _express2.default)()
-                        .use((0, _compression2.default)()) // Compression support
-                        .use(_bodyParser2.default.json()) // Automatic parsing of the response body
-                        .use(
-                            _bodyParser2.default.urlencoded({ extended: true })
-                        )
+                    Express()
+                        .use(Compression()) // Compression support
+                        .use(BodyParser.json()) // Automatic parsing of the response body
+                        .use(BodyParser.urlencoded({ extended: true }))
                         // Catch route
                         .all('*', (req, res, next) => {
-                            const url = _url2.default.parse(req.url, true)
+                            const url = Url.parse(req.url, true)
                             console.log('URL:', url)
                             const request = HttpRequest({
                                 http: HttpHeader({
@@ -323,79 +284,72 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                     const port = 8000
                     const prog = app(fn)
 
-                    _http2.default.createServer(prog).listen(port, () => {
+                    Http.createServer(prog).listen(port, () => {
                         console.log(`Listening on port: ${port}`)
                     })
                 }
 
-                exports.default = { program }
+                module.exports = { program }
             },
             {}
         ],
         '9ee7': [
             function(require, module, exports) {
-                'use strict'
+                /*
+    Request
 
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
+    Provides a data structure that represents an incoming request.
+*/
 
-                var _types = require('@fntk/types')
+                const {
+                    Type,
+                    Data,
+                    Union,
+                    String,
+                    Object
+                } = require('@fntk/types')
 
-                const RequestType = (0, _types.Data)('Request', {
+                const RequestType = Data('Request', {
                     path: String,
                     payload: Object
-                }) /*
-        Request
-    
-        Provides a data structure that represents an incoming request.
-    */
-
-                const NLPRequestType = (0, _types.Data)('NLP', {
-                    sentence: String
                 })
 
-                const Request = (0, _types.Union)('Request', {
+                const NLPRequestType = Type(
+                    'NLP',
+                    v => Object.is(v) && v.sentence && String.is(v.sentence),
+                    v => ({ sentence: String(v) })
+                )
+
+                // const NLPRequestType = Data('NLP', {
+                //     sentence: String
+                // })
+
+                const Request = Union('Request', {
                     Request: RequestType,
                     NLP: NLPRequestType
                 })
 
-                exports.default = Request
+                module.exports = Request
             },
             {}
         ],
         '9Fxe': [
             function(require, module, exports) {
-                'use strict'
-
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
-
-                var _webService = require('./web-service')
-
-                var _webService2 = _interopRequireDefault(_webService)
-
-                var _request = require('../../data/request')
-
-                var _request2 = _interopRequireDefault(_request)
-
-                function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : { default: obj }
-                }
-
-                // Get http requests, send them to the system for processing and
-                // send the response after successfull handling.
                 /*
     HttpListener
 
     Listen to http events and forward them back to the app for handling.
 */
 
-                exports.default = cfg => fn =>
-                    _webService2.default.program(request => {
+                const WebService = require('./web-service')
+                const Request = require('../../data/request')
+
+                // Get http requests, send them to the system for processing and
+                // send the response after successfull handling.
+                module.exports = cfg => fn =>
+                    WebService.program(request => {
                         console.log('Http:', request)
-                        const req = _request2.default.Request({
+                        const req = Request.Request({
                             path: request.http.path,
                             payload: request.data
                         })
@@ -405,13 +359,57 @@ parcelRequire = (function(modules, cache, entry, globalName) {
             },
             { './web-service': 'shZs', '../../data/request': '9ee7' }
         ],
+        '8f4u': [
+            function(require, module, exports) {
+                /*
+    telegram.js
+
+    Get updates from telegram.
+*/
+
+                const Request = require('../../data/request')
+                const TeleBot = require('telebot')
+
+                const toPromise = p => (p.then ? p : Promise.resolve(p))
+
+                module.exports = ({ token }) => fn => {
+                    const bot = new TeleBot({
+                        token,
+                        polling: {
+                            interval: 1000
+                        }
+                    })
+
+                    bot.on('text', msg => {
+                        console.log('[Gateway] [Telegram] Request: ', msg)
+                        const req = Request.NLP(msg.text)
+
+                        toPromise(fn(msg.text))
+                            .then(response => {
+                                console.log(
+                                    '[Gateway] [Telegram] Response: ',
+                                    response
+                                )
+                                bot.sendMessage(msg.from.id, response, {
+                                    parseMode: 'html',
+                                    replyToMessage: msg.message_id
+                                })
+                            })
+                            .catch(e => {
+                                console.log('[Gateway] [Telegram] Error:', e)
+                                bot.sendMessage(msg.from.id, response, {
+                                    replyToMessage: msg.message_id
+                                })
+                            })
+                    })
+
+                    bot.start()
+                }
+            },
+            { '../../data/request': '9ee7' }
+        ],
         T0sK: [
             function(require, module, exports) {
-                'use strict'
-
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
                 /*
     Route sentences to modules using nlp technics.
 */
@@ -585,8 +583,7 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                 // const toPathRequest = functions => request => {}
 
                 // default :: Path => NlpRequest => Request
-
-                exports.default = ({ path }) => {
+                module.exports = ({ path }) => {
                     // Load nlp functions
                     State.functions = getNlpFunctions(path)
                     const getMatch = getMatches(State.functions)
@@ -694,46 +691,30 @@ parcelRequire = (function(modules, cache, entry, globalName) {
         ],
         Focm: [
             function(require, module, exports) {
-                'use strict'
-
-                Object.defineProperty(exports, '__esModule', {
-                    value: true
-                })
-
-                var _app = require('./data/app')
-
-                var _app2 = _interopRequireDefault(_app)
-
-                var _response = require('./data/response')
-
-                var _response2 = _interopRequireDefault(_response)
-
-                var _http = require('./gateways/http')
-
-                var _http2 = _interopRequireDefault(_http)
-
-                var _nlp = require('./middleware/nlp')
-
-                var _nlp2 = _interopRequireDefault(_nlp)
-
-                var _path = require('path')
-
-                var _path2 = _interopRequireDefault(_path)
-
-                function _interopRequireDefault(obj) {
-                    return obj && obj.__esModule ? obj : { default: obj }
-                }
-
-                const path =
-                    _path2.default.resolve(process.cwd()) + '/functions' // TODO: Modify node search path for modules
+                // TODO: Modify node search path for modules
                 // See:
                 // https://gist.github.com/branneman/8048520
-                // global.include = path => require(`${__dirname}/${path}`)
+                global.include = path => require(`${__dirname}/${path}`)
 
-                // Import the app structure
+                //
+                // -- Imports --
+                //
+                const App = require('./data/app')
+                const Response = require('./data/response')
+                const HTTPGateway = require('./gateways/http')
+                const TelegramGateway = require('./gateways/telegram')
+                const NLPMiddleware = require('./middleware/nlp')
+                const Path = require('path')
 
+                //
+                // -- Config --
+                //
+                const path = Path.resolve(process.cwd()) + '/functions'
                 const port = 3000
 
+                //
+                // -- Logic --
+                //
                 const loadFunction = (req, basePath) => {
                     const fn = path => require(`${basePath}${path}`)
                     return fn(req.path)(req.payload)
@@ -746,30 +727,35 @@ parcelRequire = (function(modules, cache, entry, globalName) {
                         return loadFunction(request, path)
                     } catch (e) {
                         console.log('Load Function: Error: ', e)
-                        return _response2.default.Error(e)
+                        return Response.Error(e)
                     }
                 }
 
-                const Service = (0, _app2.default)()
+                const Service = App()
                     // Add data sources
-                    .source((0, _http2.default)({ port }))
+                    .source(HTTPGateway({ port }))
                     // Add data manipulation pipeline steps
-                    .add((0, _nlp2.default)({ path }))
+                    .add(NLPMiddleware({ path }))
                     // Add data processing
                     .do(Router({ path }))
 
-                exports.default = {
+                //
+                // -- Exports --
+                //
+                module.exports = {
                     Service,
-                    App: _app2.default,
+                    App,
                     Router,
-                    HTTPGateway: _http2.default,
-                    NLPMiddleware: _nlp2.default
+                    HTTPGateway,
+                    TelegramGateway,
+                    NLPMiddleware
                 }
             },
             {
                 './data/app': '2SjF',
                 './data/response': 'csfc',
                 './gateways/http': '9Fxe',
+                './gateways/telegram': '8f4u',
                 './middleware/nlp': 'T0sK'
             }
         ]

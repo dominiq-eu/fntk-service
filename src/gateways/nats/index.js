@@ -1,12 +1,13 @@
 /*
-    NatsListener
+    NATSGateway
 
     Listen to NATS events.
 */
 
-import Request from "../../../app/data/request";
-import Response from "../../../app/data/response";
+const Request = require('../../../app/data/request')
+const Response = require('../../../app/data/response')
 
-export default cfg => (fn: Request => Response) => {
-  return undefined;
-};
+module.exports = cfg => fn => {
+    // Listen for natas events and translate to requests.
+    return undefined
+}

@@ -1,13 +1,13 @@
 // Express
-import Express from 'express'
-import Compression from 'compression'
-import BodyParser from 'body-parser'
+const Express = require('express')
+const Compression = require('compression')
+const BodyParser = require('body-parser')
 
 // Node
-import Url from 'url'
-import Http from 'http'
+const Url = require('url')
+const Http = require('http')
 
-import { Data } from '@fntk/types'
+const { Data } = require('@fntk/types')
 
 //
 // -- Types
@@ -75,4 +75,4 @@ const program = fn => {
     })
 }
 
-export default { program }
+module.exports = { program }

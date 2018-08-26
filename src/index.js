@@ -1,19 +1,27 @@
 // TODO: Modify node search path for modules
 // See:
 // https://gist.github.com/branneman/8048520
-// global.include = path => require(`${__dirname}/${path}`)
+global.include = path => require(`${__dirname}/${path}`)
 
-// Import the app structure
-import App from './data/app'
-import Response from './data/response'
-import HTTPGateway from './gateways/http'
-import NLPMiddleware from './middleware/nlp'
+//
+// -- Imports --
+//
+const App = require('./data/app')
+const Response = require('./data/response')
+const HTTPGateway = require('./gateways/http')
+const TelegramGateway = require('./gateways/telegram')
+const NLPMiddleware = require('./middleware/nlp')
+const Path = require('path')
 
-import Path from 'path'
-
+//
+// -- Config --
+//
 const path = Path.resolve(process.cwd()) + '/functions'
 const port = 3000
 
+//
+// -- Logic --
+//
 const loadFunction = (req, basePath) => {
     const fn = path => require(`${basePath}${path}`)
     return fn(req.path)(req.payload)
@@ -38,10 +46,14 @@ const Service = App()
     // Add data processing
     .do(Router({ path }))
 
-export default {
+//
+// -- Exports --
+//
+module.exports = {
     Service,
     App,
     Router,
     HTTPGateway,
+    TelegramGateway,
     NLPMiddleware
 }

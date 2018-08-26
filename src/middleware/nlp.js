@@ -163,7 +163,7 @@ const getMatches = functions => line =>
 // const toPathRequest = functions => request => {}
 
 // default :: Path => NlpRequest => Request
-export default ({ path }) => {
+module.exports = ({ path }) => {
     // Load nlp functions
     State.functions = getNlpFunctions(path)
     const getMatch = getMatches(State.functions)
