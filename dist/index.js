@@ -106,17 +106,19 @@ parcelRequire = (function(e, r, n, t) {
         csfc: [
             function(require, module, exports) {
                 const {
-                        Union: r,
-                        Result: e,
-                        Array: s
+                        Type: r,
+                        Union: e,
+                        Result: s,
+                        Array: o
                     } = require('@fntk/types'),
-                    { random: o } = require('../utils'),
-                    n = r('Response', {
-                        Success: e.Ok,
-                        Error: e.Err,
-                        Random: r => e.Ok(o(s(r)))
+                    { random: n } = require('../utils'),
+                    t = r('Random', r => s.Ok.is(r), r => s.Ok(n(r))),
+                    u = e('Response', {
+                        Success: s.Ok,
+                        Error: s.Err,
+                        Random: t
                     })
-                module.exports = n
+                module.exports = u
             },
             { '../utils': 'jWsf' }
         ],
