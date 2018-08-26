@@ -17,10 +17,6 @@ const NLPRequestType = Type(
     v => ({ sentence: String(v) })
 )
 
-// const NLPRequestType = Data('NLP', {
-//     sentence: String
-// })
-
 const Request = Union('Request', {
     Request: RequestType,
     NLP: NLPRequestType

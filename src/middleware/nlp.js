@@ -10,7 +10,8 @@ const NlpToolkit = require('nlp-toolkit')
 const StopwordsIso = require('stopwords-iso')
 const Fs = require('fs')
 
-const Request = require('../data/request').default
+const Request = require('../data/request')
+const Response = require('../data/response')
 
 // Languages :: Languages
 const Language = {
@@ -165,45 +166,34 @@ const getMatches = functions => line =>
 // default :: Path => NlpRequest => Request
 module.exports = ({ path }) => {
     // Load nlp functions
+    console.log('[Middleware] [NLP] Path:', path)
     State.functions = getNlpFunctions(path)
-    const getMatch = getMatches(State.functions)
+    console.log('GetNlpFunctions:', State.functions)
+    const findModule = getMatches(State.functions)
+    console.log('getMatch:', findModule)
     return reqRes => {
-        console.log('[Middleware] [NLP] path:', path)
         console.log('[Middleware] [NLP] ReqRes:', reqRes)
+        if (Request.NLP.is(reqRes)) {
+            console.log('[Middleware] [NLP] Request:', reqRes)
 
-        if (!reqRes.case) {
-            return reqRes
+            // Request with nlp body
+            const sentence = reqRes.sentence
+
+            const matchTable = findModule(sentence)
+            console.log('MatchTable:', matchTable)
+            if (matchTable.length > 0) {
+                const match = matchTable[0]
+                const fnPath = match.path
+                const newRequest = Request.Request({
+                    path: fnPath,
+                    payload: { sentence }
+                })
+                console.log('[Middleware] [NLP] Generated Request:', newRequest)
+                return newRequest
+            }
         }
 
-        return reqRes.case({
-            Request: () => {
-                console.log('[Middleware] [NLP] Request:', Request)
-                // 1. Request with nlp body
-                const sentence = reqRes.payload.sentence
-                if (sentence) {
-                    const matchTable = getMatch(String(sentence))
-                    if (matchTable.length > 0) {
-                        const match = matchTable[0]
-                        return Request.NLP(match.path, sentence)
-                    }
-                }
-                // 2. NLP Request
-                return reqRes
-            },
-            Response: () => reqRes
-        })
-
-        // const fn = findMatch(functions)
-        // if (fn) {
-        //     return fn(req.data)
-        // }
-        // return {
-        //     ok: false,
-        //     payload: {
-        //         error: 'nlp',
-        //         data: request
-        //     }
-        // }
+        return reqRes
     }
 }
 

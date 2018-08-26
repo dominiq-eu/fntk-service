@@ -7,6 +7,7 @@ global.include = path => require(`${__dirname}/${path}`)
 // -- Imports --
 //
 const App = require('./data/app')
+const Request = require('./data/request')
 const Response = require('./data/response')
 const HTTPGateway = require('./gateways/http')
 const TelegramGateway = require('./gateways/telegram')
@@ -22,19 +23,24 @@ const port = 3000
 //
 // -- Logic --
 //
-const loadFunction = (req, basePath) => {
-    const fn = path => require(`${basePath}${path}`)
-    return fn(req.path)(req.payload)
+const loadFunction = (req, path) => {
+    const fn = require(path)
+    return fn(req.payload)
 }
 
 const Router = ({ path }) => request => {
-    try {
-        console.log('Load Function: Path: ', path)
-        console.log('Load Function: Request: ', request)
-        return loadFunction(request, path)
-    } catch (e) {
-        console.log('Load Function: Error: ', e)
-        return Response.Error(e)
+    if (Request.Request.is(request)) {
+        const fnPath = `${path}${request.path}`
+        try {
+            console.log('Load Function: Path: ', fnPath)
+            console.log('Load Function: Request: ', request)
+            return loadFunction(request, fnPath)
+        } catch (e) {
+            console.log('Load Function: Error: ', e)
+            return Response.Error("Can't find " + fnPath)
+        }
+    } else {
+        return Response.Error('Invalid request.')
     }
 }
 
@@ -53,6 +59,8 @@ module.exports = {
     Service,
     App,
     Router,
+    Request,
+    Response,
     HTTPGateway,
     TelegramGateway,
     NLPMiddleware

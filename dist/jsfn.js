@@ -8,5 +8,5 @@
         * ./middleware/
         * ./gateway/
 */
-const { Service } = require('./index.js').default
+const { Service } = require('./index.js')
 Service.start()
