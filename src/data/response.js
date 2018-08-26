@@ -4,7 +4,7 @@
     Provides a data structure that represents an incoming request.
 */
 
-const { Type, Union, Result, Array } = require('@fntk/types')
+const { Type, Union, Result } = require('@fntk/types')
 const { random } = require('../utils')
 
 const RandomOkType = Type(
