@@ -12,7 +12,7 @@ const Request = require('../../data/request')
 module.exports = cfg => fn =>
     WebService.program(request => {
         console.log('Http:', request)
-        const req = Request.Request({
+        const req = Request({
             path: request.http.path,
             payload: request.data
         })

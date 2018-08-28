@@ -1,7 +1,7 @@
 // TODO: Modify node search path for modules
 // See:
 // https://gist.github.com/branneman/8048520
-global.include = path => require(`${__dirname}/${path}`)
+//global.include = path => require(`${__dirname}/${path}`)
 
 //
 // -- Imports --
@@ -29,7 +29,7 @@ const loadFunction = (req, path) => {
 }
 
 const Router = ({ path }) => request => {
-    if (Request.Request.is(request)) {
+    if (Request.is(request)) {
         const fnPath = `${path}${request.path}`
         try {
             console.log('Load Function: Path: ', fnPath)
@@ -46,9 +46,9 @@ const Router = ({ path }) => request => {
 
 const Service = App()
     // Add data sources
-    .source(HTTPGateway({ port }))
+    .add(HTTPGateway({ port }))
     // Add data manipulation pipeline steps
-    .add(NLPMiddleware({ path }))
+    .use(NLPMiddleware({ path }))
     // Add data processing
     .do(Router({ path }))
 

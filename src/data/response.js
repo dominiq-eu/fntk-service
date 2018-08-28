@@ -7,11 +7,7 @@
 const { Type, Union, Result } = require('@fntk/types')
 const { random } = require('../utils')
 
-const RandomOkType = Type(
-    'Random',
-    v => Result.Ok.is(v),
-    data_list => Result.Ok(random(data_list))
-)
+const RandomOkType = Result.Ok.derive(val_list => random(val_list))
 
 const Response = Union('Response', {
     Success: Result.Ok,

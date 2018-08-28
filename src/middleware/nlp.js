@@ -171,20 +171,18 @@ module.exports = ({ path }) => {
     console.log('GetNlpFunctions:', State.functions)
     const findModule = getMatches(State.functions)
     console.log('getMatch:', findModule)
-    return reqRes => {
-        console.log('[Middleware] [NLP] ReqRes:', reqRes)
-        if (Request.NLP.is(reqRes)) {
-            console.log('[Middleware] [NLP] Request:', reqRes)
+    return request => {
+        console.log('[Middleware] [NLP] request:', request)
+        if (Request.NLP.is(request)) {
+            console.log('[Middleware] [NLP] Request:', request)
 
-            // Request with nlp body
-            const sentence = reqRes.sentence
-
+            const sentence = request.payload.sentence
             const matchTable = findModule(sentence)
             console.log('MatchTable:', matchTable)
             if (matchTable.length > 0) {
                 const match = matchTable[0]
                 const fnPath = match.path
-                const newRequest = Request.Request({
+                const newRequest = Request({
                     path: fnPath,
                     payload: { sentence }
                 })
@@ -193,7 +191,7 @@ module.exports = ({ path }) => {
             }
         }
 
-        return reqRes
+        return request
     }
 }
 

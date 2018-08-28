@@ -15,8 +15,9 @@
     },
     "scripts": {
         "build": "parcel build src/index.js --target node --no-cache --detailed-report",
+        "bundle": "parcel build src/index.js --target node --no-cache --detailed-report --no-minify",
         "watch": "parcel watch src/index.js --target node --no-cache",
-        "test": "echo '!!! Use Jest or something else to test !!!'",
+        "test": "infernu -q src/index.js",
         "precommit": "yarn test && pretty-quick --staged"
     },
     "dependencies": {
