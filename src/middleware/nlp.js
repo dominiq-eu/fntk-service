@@ -60,10 +60,16 @@ const getNlpFunctions = dir =>
             // const fn = require(`${path}/index.js`)
             if (cfg.sentences.de || cfg.sentences.en) {
                 // ret.push({ fn, sentences: cfg.sentences })
-                ret.push({
-                    path: path.replace(dir, ''),
-                    sentences: cfg.sentences
-                })
+                ret = ret.concat([
+                    {
+                        path: path.replace(dir, ''),
+                        sentences: cfg.sentences
+                    }
+                ])
+                // ret.push({
+                //     path: path.replace(dir, ''),
+                //     sentences: cfg.sentences
+                // })
             }
         } catch (e) {
             // Not found, or something else..
@@ -94,9 +100,8 @@ const StemmSnowball = text => {
         stemmer.setCurrent(cleanedText)
         stemmer.stem()
         return stemmer.getCurrent()
-    } else {
-        return text.toLowerCase()
     }
+    return text.toLowerCase()
 }
 
 // Normalize :: String -> String
@@ -134,8 +139,6 @@ const getPropability = (text, fn) => {
 
 // getMatches :: fn[] -> fn
 const getMatches = functions => line =>
-    // {
-    // const matchTable = functions
     functions
         .reduce(
             (ret, fn) =>
@@ -152,17 +155,6 @@ const getMatches = functions => line =>
         .filter(fn => fn.propability > 0)
         .sort((a, b) => b.propability - a.propability)
 
-// if (matchTable.length > 0) {
-//     const fn = matchTable[0]
-//     return fn
-// } else {
-//     return
-// }
-// }
-
-//
-// const toPathRequest = functions => request => {}
-
 // default :: Path => NlpRequest => Request
 module.exports = ({ path }) => {
     // Load nlp functions
@@ -174,8 +166,6 @@ module.exports = ({ path }) => {
     return request => {
         console.log('[Middleware] [NLP] request:', request)
         if (Request.NLP.is(request)) {
-            console.log('[Middleware] [NLP] Request:', request)
-
             const sentence = request.payload.sentence
             const matchTable = findModule(sentence)
             console.log('MatchTable:', matchTable)

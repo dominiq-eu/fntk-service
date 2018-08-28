@@ -32,16 +32,15 @@ const Router = ({ path }) => request => {
     if (Request.is(request)) {
         const fnPath = `${path}${request.path}`
         try {
-            console.log('Load Function: Path: ', fnPath)
-            console.log('Load Function: Request: ', request)
+            console.log('[Router] Path:', fnPath)
+            console.log('[Router] Request:', request)
             return loadFunction(request, fnPath)
         } catch (e) {
             console.log('Load Function: Error: ', e)
             return Response.Error("Can't find " + fnPath)
         }
-    } else {
-        return Response.Error('Invalid request.')
     }
+    return Response.Error('Invalid request: ' + request)
 }
 
 const Service = App()

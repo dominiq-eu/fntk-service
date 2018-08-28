@@ -44,27 +44,27 @@ const TelegramGateway = function({ token, parseMode = ParseMode.Text() }) {
         bot.on('text', msg => {
             console.log('[Gateway] [Telegram] Request: ', msg)
 
-            const req = Request.NLP(msg.text)
             const handle = req => toPromise(fn(req))
-            handle(req)
+            const req = Request.NLP(msg.text)
+            return handle(req)
                 .then(response => {
                     console.log('[Gateway] [Telegram] Response: ', response)
                     const answer = String(response.value)
                     console.log('[Gateway] [Telegram] Answer: ', answer)
-                    bot.sendMessage(msg.from.id, answer, {
+                    return bot.sendMessage(msg.from.id, answer, {
                         parseMode,
                         replyToMessage: msg.message_id
                     })
                 })
                 .catch(e => {
                     console.log('[Gateway] [Telegram] Error:', e)
-                    bot.sendMessage(msg.from.id, 'Internal Error', {
+                    return bot.sendMessage(msg.from.id, 'Internal Error', {
                         replyToMessage: msg.message_id
                     })
                 })
         })
 
-        bot.start()
+        return bot.start()
     }
 }
 TelegramGateway.ParseMode = ParseMode

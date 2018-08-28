@@ -31,7 +31,7 @@ const HttpRequest = Data('HTTPRequest', {
 const isObject = obj => obj !== null && typeof obj === 'object'
 const toPromise = p => (p.then ? p : Promise.resolve(p))
 const toString = response =>
-    isObject(response) ? JSON.stringify(response, null, 4) : response
+    isObject(response) ? JSON.stringify(response, 0, 4) : response
 const isObjEmpty = obj => Boolean(Object.keys(obj).length)
 
 // app :: ()
@@ -55,12 +55,12 @@ const app = fn =>
             })
             console.log('Request:', request)
             const handler = r => toPromise(fn(r))
-            handler(request)
+            return handler(request)
                 .then(toString)
                 .then(response => {
                     console.log('[WebService] Response: ', response)
                     res.write(response)
-                    res.end()
+                    return res.end()
                 })
         })
 
@@ -70,9 +70,9 @@ const program = fn => {
     const port = 8000
     const prog = app(fn)
 
-    Http.createServer(prog).listen(port, () => {
+    return Http.createServer(prog).listen(port, () =>
         console.log(`Listening on port: ${port}`)
-    })
+    )
 }
 
 module.exports = { program }
