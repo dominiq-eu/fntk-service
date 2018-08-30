@@ -190,7 +190,7 @@ module.exports = RequestType;
 const { Union, Result } = require('@fntk/types');
 const { Random } = require('@fntk/utils');
 
-const RandomOkType = Result.Ok.derive(val_list => random(val_list));
+const RandomOkType = Result.Ok.derive(val_list => Random(val_list));
 
 const Response = Union('Response', {
     Success: Result.Ok,
