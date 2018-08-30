@@ -47,7 +47,8 @@
         "precommit": "yarn test && pretty-quick --staged"
     },
     "dependencies": {
-        "@fntk/types": "file:../fntk-types/",
+        "@fntk/types": "https://github.com/pimml/fntk-types",
+        "@fntk/utils": "https://github.com/pimml/fntk-utils",
         "body-parser": "^1.18.3",
         "compression": "^1.7.3",
         "express": "^4.16.3",

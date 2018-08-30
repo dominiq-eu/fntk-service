@@ -12,6 +12,9 @@ const Fs = require('fs')
 
 const Request = require('../data/request')
 const Response = require('../data/response')
+const { Log } = require('@fntk/utils')
+
+const log = Log('NLPMiddleware')
 
 // Languages :: Languages
 const Language = {
@@ -28,12 +31,6 @@ const State = {
 //
 // -- Utils
 //
-
-// trace :: String => a => a
-const trace = msg => a => {
-    console.log(msg, a)
-    return a
-}
 
 // getSubDirs :: String => String[]
 const getSubDirs = dir =>
@@ -57,19 +54,13 @@ const getNlpFunctions = dir =>
     getSubDirs(dir).reduce((ret, path) => {
         try {
             const cfg = require(`${path}/function.json`)
-            // const fn = require(`${path}/index.js`)
             if (cfg.sentences.de || cfg.sentences.en) {
-                // ret.push({ fn, sentences: cfg.sentences })
-                ret = ret.concat([
+                return ret.concat([
                     {
                         path: path.replace(dir, ''),
                         sentences: cfg.sentences
                     }
                 ])
-                // ret.push({
-                //     path: path.replace(dir, ''),
-                //     sentences: cfg.sentences
-                // })
             }
         } catch (e) {
             // Not found, or something else..
@@ -124,7 +115,7 @@ const getMatch = (stemmer, text, sentences) =>
     sentences
         .map(s => calcSimilarity(stemmer, text, s))
         .sort(([val_a, s_a], [val_b, s_b]) => val_b - val_a)
-        // .map(trace('#'))
+        // .map(log.debug('#'))
         .filter(([val, sentence]) => val >= 0.75)
         .map(([value, txt]) => ({
             value,
@@ -158,17 +149,17 @@ const getMatches = functions => line =>
 // default :: Path => NlpRequest => Request
 module.exports = ({ path }) => {
     // Load nlp functions
-    console.log('[Middleware] [NLP] Path:', path)
+    log.debug('Path', path)
     State.functions = getNlpFunctions(path)
-    console.log('GetNlpFunctions:', State.functions)
+    log.debug('GetNlpFunctions', State.functions)
     const findModule = getMatches(State.functions)
-    console.log('getMatch:', findModule)
+    log.debug('getMatch', findModule)
     return request => {
-        console.log('[Middleware] [NLP] request:', request)
+        log.debug('request', request)
         if (Request.NLP.is(request)) {
             const sentence = request.payload.sentence
             const matchTable = findModule(sentence)
-            console.log('MatchTable:', matchTable)
+            log.debug('MatchTable', matchTable)
             if (matchTable.length > 0) {
                 const match = matchTable[0]
                 const fnPath = match.path
@@ -176,11 +167,10 @@ module.exports = ({ path }) => {
                     path: fnPath,
                     payload: { sentence }
                 })
-                console.log('[Middleware] [NLP] Generated Request:', newRequest)
+                log.debug('NewRequest', newRequest)
                 return newRequest
             }
         }
-
         return request
     }
 }
@@ -192,10 +182,10 @@ module.exports = ({ path }) => {
 // const Readline = require('readline')
 // const input = Readline.createInterface(process.stdin, process.stdout)
 //
-// console.log('Loading..')
+// log.debug('Loading..')
 // State.functions = getNlpFunctions('../../modules/functions')
 //
-// console.log('Test against:\n')
+// log.debug('Test against:\n')
 // State.functions
 //     // print sentences
 //     .map(f => f.sentences)
@@ -208,7 +198,7 @@ module.exports = ({ path }) => {
 //         if (line == 'exit') {
 //             input.close()
 //         }
-//         console.log('')
+//         log.debug('')
 //
 //         const stemmer = [/*StemmPorter2,*/ StemmSnowball, Normalize]
 //         const matchTable = State.functions
@@ -225,13 +215,13 @@ module.exports = ({ path }) => {
 //             )
 //             .filter(fn => fn.propability > 0)
 //             .sort((a, b) => b.propability - a.propability)
-//         console.log('MatchTable:\n', matchTable)
+//         log.debug('MatchTable:\n', matchTable)
 //
 //         if (matchTable.length > 0) {
 //             const fn = matchTable[0]
 //             fn.fn(line)
 //         } else {
-//             console.log('No Match!')
+//             log.debug('No Match!')
 //         }
 //         input.prompt()
 //     })

@@ -4,7 +4,7 @@
     Provides a data structure for basic app behaivor.
 */
 
-const { Let } = require('../utils')
+const { Let } = require('@fntk/utils')
 
 //
 // App

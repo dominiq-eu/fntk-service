@@ -8,6 +8,9 @@ const Url = require('url')
 const Http = require('http')
 
 const { Data } = require('@fntk/types')
+const { Log } = require('@fntk/utils')
+
+const log = Log('WebService')
 
 //
 // -- Types
@@ -43,7 +46,7 @@ const app = fn =>
         // Catch route
         .all('*', (req, res, next) => {
             const url = Url.parse(req.url, true)
-            console.log('URL:', url)
+            log.debug('URL', url)
             const request = HttpRequest({
                 http: HttpHeader({
                     method: req.method,
@@ -53,12 +56,12 @@ const app = fn =>
                 }),
                 data: isObjEmpty(url.query) ? url.query : req.body
             })
-            console.log('Request:', request)
+            log.debug('Request', request)
             const handler = r => toPromise(fn(r))
             return handler(request)
                 .then(toString)
                 .then(response => {
-                    console.log('[WebService] Response: ', response)
+                    log.debug('[WebService] Response: ', response)
                     res.write(response)
                     return res.end()
                 })
@@ -71,7 +74,7 @@ const program = fn => {
     const prog = app(fn)
 
     return Http.createServer(prog).listen(port, () =>
-        console.log(`Listening on port: ${port}`)
+        log.debug(`Listening on: 0.0.0.0:${port}`)
     )
 }
 

@@ -7,6 +7,9 @@
 const Request = require('../../data/request')
 const TeleBot = require('telebot')
 const { Union, StringType } = require('@fntk/types')
+const { Log } = require('@fntk/utils')
+
+const log = Log('TelegramGateway')
 
 //
 // -- Helper --
@@ -30,9 +33,9 @@ const ParseMode = Union('TelegramParseMode', {
 // https://core.telegram.org/bots/api#formatting-options
 //
 const TelegramGateway = function({ token, parseMode = ParseMode.Text() }) {
-    console.log('[Gateway] [Telegram] parseMode:', parseMode)
+    log.debug('parseMode', parseMode)
     ParseMode.check(parseMode)
-    console.log('[Gateway] [Telegram] ParseMode:', parseMode)
+    log.debug('ParseMode', parseMode)
     return fn => {
         const bot = new TeleBot({
             token,
@@ -41,23 +44,24 @@ const TelegramGateway = function({ token, parseMode = ParseMode.Text() }) {
             }
         })
 
+        // eslint-disable-next-line fp/no-unused-expression
         bot.on('text', msg => {
-            console.log('[Gateway] [Telegram] Request: ', msg)
+            log.debug('Request', msg)
 
             const handle = req => toPromise(fn(req))
             const req = Request.NLP(msg.text)
             return handle(req)
                 .then(response => {
-                    console.log('[Gateway] [Telegram] Response: ', response)
+                    log.debug('Response', response)
                     const answer = String(response.value)
-                    console.log('[Gateway] [Telegram] Answer: ', answer)
+                    log.debug('Answer', answer)
                     return bot.sendMessage(msg.from.id, answer, {
                         parseMode,
                         replyToMessage: msg.message_id
                     })
                 })
                 .catch(e => {
-                    console.log('[Gateway] [Telegram] Error:', e)
+                    log.debug('Error', e)
                     return bot.sendMessage(msg.from.id, 'Internal Error', {
                         replyToMessage: msg.message_id
                     })

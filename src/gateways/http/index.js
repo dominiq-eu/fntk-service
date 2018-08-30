@@ -6,16 +6,19 @@
 
 const WebService = require('./web-service')
 const Request = require('../../data/request')
+const { Log } = require('@fntk/utils')
+
+const log = Log('HTTPGateway')
 
 // Get http requests, send them to the system for processing and
 // send the response after successfull handling.
 module.exports = cfg => fn =>
     WebService.program(request => {
-        console.log('Http:', request)
+        log.debug('HTTPRequest', request)
         const req = Request({
             path: request.http.path,
             payload: request.data
         })
-        console.log('Request:', req)
+        log.debug('Request', req)
         return fn(req)
     })
