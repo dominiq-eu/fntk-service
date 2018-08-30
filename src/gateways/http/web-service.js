@@ -73,9 +73,10 @@ const program = fn => {
     const port = 8000
     const prog = app(fn)
 
-    return Http.createServer(prog).listen(port, () =>
+    Http.createServer(prog).listen(port, () =>
         log.debug(`Listening on: 0.0.0.0:${port}`)
     )
+    return port
 }
 
 module.exports = { program }
