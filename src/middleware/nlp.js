@@ -10,6 +10,8 @@ const NlpToolkit = require('nlp-toolkit')
 const StopwordsIso = require('stopwords-iso')
 const Fs = require('fs')
 
+// const GerSnowball = require('./snowball-ger')
+
 const Request = require('../data/request')
 const Response = require('../data/response')
 const { Log } = require('@fntk/utils')
@@ -95,6 +97,11 @@ const StemmSnowball = text => {
     return text.toLowerCase()
 }
 
+// const GerStemmer = text => {
+//     const cleanedText = cleanStopwords(text.toLowerCase().trim(), State.lang)
+//     return GerSnowball(cleanedText)
+// }
+
 // Normalize :: String -> String
 const Normalize = text => {
     const token = NlpToolkit.tokenizer(text)
@@ -124,6 +131,7 @@ const getMatch = (stemmer, text, sentences) =>
 
 // getPropability :: String -> FnStruct -> Number
 const getPropability = (text, fn) => {
+    // const match = getMatch(GerStemmer, text, fn.sentences.de)[0]
     const match = getMatch(StemmSnowball, text, fn.sentences.de)[0]
     return (match && match.value) !== undefined ? match.value : 0
 }
