@@ -7,7 +7,7 @@
 const Request = require('../../data/request')
 const TeleBot = require('telebot')
 const { Union, StringType } = require('@fntk/types')
-const { Log, Let } = require('@fntk/utils')
+const { Log, Pipe } = require('@fntk/utils')
 
 const log = Log('TelegramGateway')
 
@@ -53,6 +53,7 @@ const TelegramGateway = function({ token, parseMode = ParseMode.Text() }) {
                 // Get Response from the system guaranteed as Promise<Response>
                 .value()
                 // .. and handle it.
+                .then(log.debug('Response'))
                 .then(response =>
                     Response.case(response, {
                         Success: () => response.value,
