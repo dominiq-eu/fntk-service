@@ -7,7 +7,7 @@
 const Request = require('../../data/request')
 const TeleBot = require('telebot')
 const { Union, StringType } = require('@fntk/types')
-const { Log } = require('@fntk/utils')
+const { Log, Let } = require('@fntk/utils')
 
 const log = Log('TelegramGateway')
 
@@ -45,29 +45,34 @@ const TelegramGateway = function({ token, parseMode = ParseMode.Text() }) {
         })
 
         // eslint-disable-next-line fp/no-unused-expression
-        bot.on('text', msg => {
-            log.debug('Request', msg)
-
-            const handle = req => toPromise(fn(req))
-            const req = Request.NLP(msg.text)
-            return handle(req)
-                .then(response => {
-                    log.debug('Response', response)
-                    const answer = String(response.value)
-                    log.debug('Answer', answer)
-                    return bot.sendMessage(msg.from.id, answer, {
+        bot.on('text', msg =>
+            // Create NLP Request and send it to the system to
+            // produce a response.
+            Pipe(Request.NLP(msg.text))
+                .andThen(req => toPromise(fn(req)))
+                // Get Response from the system guaranteed as Promise<Response>
+                .value()
+                // .. and handle it.
+                .then(response =>
+                    Response.case(response, {
+                        Success: () => response.value,
+                        Error: () => response.error
+                    })
+                )
+                .then(log.debug('Answer'))
+                .then(answer =>
+                    bot.sendMessage(msg.from.id, answer, {
                         parseMode,
                         replyToMessage: msg.message_id
                     })
-                })
-                .catch(e => {
-                    log.debug('Error', e)
-                    return bot.sendMessage(msg.from.id, 'Internal Error', {
+                )
+                .catch(log.error('Error'))
+                .catch(e =>
+                    bot.sendMessage(msg.from.id, 'Internal Error', {
                         replyToMessage: msg.message_id
                     })
-                })
-        })
-
+                )
+        )
         return bot.start()
     }
 }

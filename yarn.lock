@@ -8,7 +8,7 @@
 
 "@fntk/utils@https://github.com/pimml/fntk-utils":
   version "1.0.0"
-  resolved "https://github.com/pimml/fntk-utils#dab8111748d8f6b3f1af23067e89cdc5e09ebca4"
+  resolved "https://github.com/pimml/fntk-utils#1d86531ab9e8de43285956fe3a10d9a01efdf908"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
