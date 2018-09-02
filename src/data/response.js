@@ -15,4 +15,7 @@ const Response = Union('Response', {
     Random: RandomOkType
 })
 
+console.log('Response:', Response)
+console.log('case:', Response.case)
+
 module.exports = Response

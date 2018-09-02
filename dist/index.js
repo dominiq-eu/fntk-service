@@ -198,6 +198,9 @@ const Response = Union('Response', {
     Random: RandomOkType
 });
 
+console.log('Response:', Response);
+console.log('case:', Response.case);
+
 module.exports = Response;
 },{}],"shZs":[function(require,module,exports) {
 // Express
@@ -307,6 +310,7 @@ module.exports = cfg => fn => WebService.program(request => {
 */
 
 const Request = require('../../data/request');
+const Response = require('../../data/response');
 const TeleBot = require('telebot');
 const { Union, StringType } = require('@fntk/types');
 const { Log, Pipe } = require('@fntk/utils');
@@ -369,7 +373,7 @@ const TelegramGateway = function ({ token, parseMode = ParseMode.Text() }) {
 TelegramGateway.ParseMode = ParseMode;
 
 module.exports = TelegramGateway;
-},{"../../data/request":"9ee7"}],"T0sK":[function(require,module,exports) {
+},{"../../data/request":"9ee7","../../data/response":"csfc"}],"T0sK":[function(require,module,exports) {
 /*
     Route sentences to modules using nlp technics.
 */

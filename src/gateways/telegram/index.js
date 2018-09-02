@@ -5,6 +5,7 @@
 */
 
 const Request = require('../../data/request')
+const Response = require('../../data/response')
 const TeleBot = require('telebot')
 const { Union, StringType } = require('@fntk/types')
 const { Log, Pipe } = require('@fntk/utils')
