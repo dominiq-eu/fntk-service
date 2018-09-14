@@ -43,13 +43,14 @@ const Router = ({ path }) => request => {
     return Response.Error('Invalid request: ' + request)
 }
 
-const Service = App()
-    // Add data sources
-    .add(HTTPGateway({ port }))
-    // Add data manipulation pipeline steps
-    .use(NLPMiddleware({ path }))
-    // Add data processing
-    .do(Router({ path }))
+const Service = () =>
+    App()
+        // Add data sources
+        .add(HTTPGateway({ port }))
+        // Add data manipulation pipeline steps
+        .use(NLPMiddleware({ path }))
+        // Add data processing
+        .do(Router({ path }))
 
 //
 // -- Exports --

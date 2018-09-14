@@ -198,9 +198,6 @@ const Response = Union('Response', {
     Random: RandomOkType
 });
 
-console.log('Response:', Response);
-console.log('case:', Response.case);
-
 module.exports = Response;
 },{}],"shZs":[function(require,module,exports) {
 // Express
@@ -627,7 +624,7 @@ const Router = ({ path }) => request => {
     return Response.Error('Invalid request: ' + request);
 };
 
-const Service = App()
+const Service = () => App()
 // Add data sources
 .add(HTTPGateway({ port }))
 // Add data manipulation pipeline steps
