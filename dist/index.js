@@ -638,7 +638,7 @@ const Service = () => App()
 module.exports = {
     Service,
     App,
-    Router,
+    Router: () => Router({ path }),
     Request,
     Response,
     HTTPGateway,
